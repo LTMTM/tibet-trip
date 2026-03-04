@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的西藏之旅 · 5月16日－5月29日</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #F7F3EC;
+  --paper: #FDFAF4;
+  --ink: #2C2416;
+  --ink-light: #7A6A52;
+  --red: #C0392B;
+  --saffron: #D4860A;
+  --sky: #4A7A9B;
+  --sage: #6B8C6A;
+  --line: rgba(44,36,22,0.12);
+  --stamp: rgba(192,57,43,0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.4;
+}
+
+/* ─── HEADER ─── */
+header {
+  position: relative;
+  padding: 70px 40px 50px;
+  text-align: center;
+  border-bottom: 2px solid var(--ink);
+  overflow: hidden;
+}
+
+.header-deco {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(212,134,10,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 85% 50%, rgba(74,122,155,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Tibetan decorative border top */
+.border-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg,
+    var(--red) 0px, var(--red) 20px,
+    var(--saffron) 20px, var(--saffron) 40px,
+    #4A7A9B 40px, #4A7A9B 60px,
+    #2C8C4A 60px, #2C8C4A 80px,
+    #fff 80px, #fff 100px
+  );
+}
+
+.trip-label {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+header h1 {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 12px;
+  animation: fadeIn 0.8s ease 0.15s both;
+}
+
+.date-range {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--saffron);
+  letter-spacing: 0.15em;
+  margin-bottom: 24px;
+  animation: fadeIn 0.8s ease 0.3s both;
+}
+
+.header-tags {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeIn 0.8s ease 0.45s both;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  color: var(--ink-light);
+  letter-spacing: 0.08em;
+}
+
+/* ─── PROGRESS BAR ─── */
+.trip-progress {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  white-space: nowrap;
+}
+
+.progress-track {
+  flex: 1;
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--saffron), var(--red));
+  border-radius: 2px;
+  width: 0;
+  transition: width 0.4s ease;
+}
+
+.today-badge {
+  font-size: 0.7rem;
+  background: var(--red);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+}
+
+/* ─── QUICK OVERVIEW ─── */
+.overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0;
+}
+
+.overview-item {
+  background: var(--paper);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.ov-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.2rem;
+  color: var(--saffron);
+  line-height: 1;
+}
+
+.ov-label {
+  font-size: 0.72rem;
+  color: var(--ink-light);
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+}
+
+/* ─── MAIN LAYOUT ─── */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ─── DAY CARD ─── */
+.day-card {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  margin-bottom: 2px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.day-card:hover {
+  box-shadow: 4px 4px 0 rgba(44,36,22,0.08);
+  z-index: 2;
+}
+
+.day-card.today {
+  border-color: var(--saffron);
+  border-width: 2px;
+}
+
+.day-card.today::before {
+  content: '今天';
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--saffron);
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.day-card.past {
+  opacity: 0.65;
+}
+
+.day-card.past.visible { opacity: 0.65; }
+
+/* Left date column */
+.day-date {
+  padding: 20px 12px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: var(--bg);
+  min-height: 100px;
+}
+
+.day-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.day-month {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+
+.day-week {
+  font-size: 0.62rem;
+  color: var(--ink-light);
+  margin-top: 6px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.day-index {
+  font-size: 0.6rem;
+  color: var(--ink-light);
+  opacity: 0.6;
+  margin-top: 6px;
+  letter-spacing: 0.1em;
+}
+
+/* Right content */
+.day-body {
+  padding: 18px 20px 18px;
+}
+
+.day-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.location-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.location-name {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.2rem;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.route-arrow {
+  font-size: 0.7rem;
+  color: var(--ink-light);
+  padding: 0 4px;
+}
+
+.day-activities {
+  font-size: 0.82rem;
+  color: var(--ink-light);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.day-activities .highlight {
+  color: var(--red);
+  font-weight: 500;
+}
+
+.day-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+}
+
+.chip-hotel {
+  background: rgba(74,122,155,0.1);
+  color: var(--sky);
+  border: 1px solid rgba(74,122,155,0.25);
+}
+
+.chip-alt {
+  background: rgba(107,140,106,0.1);
+  color: var(--sage);
+  border: 1px solid rgba(107,140,106,0.25);
+}
+
+.chip-red {
+  background: rgba(192,57,43,0.07);
+  color: var(--red);
+  border: 1px solid rgba(192,57,43,0.2);
+}
+
+/* Category color dots */
+.cat-lhasa   { background: #C0392B; }
+.cat-shigatse { background: #D4860A; }
+.cat-ali     { background: #6B8C6A; }
+.cat-kailash { background: #4A3728; }
+.cat-end     { background: #9B59B6; }
+
+/* ─── SECTION HEADERS ─── */
+.chapter {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 36px 0 12px;
+}
+
+.chapter-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.chapter-title {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: var(--ink-light);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ─── PACKING NOTE ─── */
+.note-box {
+  background: rgba(212,134,10,0.06);
+  border: 1px solid rgba(212,134,10,0.25);
+  border-left: 3px solid var(--saffron);
+  padding: 20px 24px;
+  margin: 48px 0 24px;
+  font-size: 0.83rem;
+  color: var(--ink-light);
+  line-height: 1.8;
+}
+
+.note-box strong {
+  color: var(--saffron);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.note-box ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.note-box li::before {
+  content: '→ ';
+  color: var(--saffron);
+}
+
+/* ─── ALTITUDE BANNER ─── */
+.altitude-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  background: var(--line);
+  margin: 24px 0;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.alt-segment {
+  flex: 1;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 0.6rem;
+  color: white;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 2px solid var(--ink);
+  padding: 40px;
+  text-align: center;
+  background: var(--paper);
+}
+
+.footer-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.footer-sub {
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+  margin-bottom: 20px;
+}
+
+.footer-contact {
+  font-size: 0.78rem;
+  color: var(--ink-light);
+  line-height: 2;
+}
+
+.footer-contact a {
+  color: var(--sky);
+  text-decoration: none;
+}
+
+/* Decorative bottom border */
+.border-bottom-deco {
+  height: 6px;
+  background: repeating-linear-gradient(90deg,
+    var(--red) 0px, var(--red) 20px,
+    var(--saffron) 20px, var(--saffron) 40px,
+    #4A7A9B 40px, #4A7A9B 60px,
+    #2C8C4A 60px, #2C8C4A 80px,
+    #fff 80px, #fff 100px
+  );
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .overview { grid-template-columns: repeat(2, 1fr); }
+  header { padding: 50px 20px 36px; }
+  .main { padding: 32px 16px 60px; }
+  .day-date { padding: 16px 8px; }
+  .day-num { font-size: 1.6rem; }
+  .day-body { padding: 14px 14px; }
+  .trip-progress { padding: 8px 16px; }
+  footer { padding: 32px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="border-top"></div>
+  <div class="header-deco"></div>
+  <div class="trip-label">My Journey · 我的旅程</div>
+  <h1>西藏朝聖之旅</h1>
+  <div class="date-range">2025年 5月16日 — 5月29日</div>
+  <div class="header-tags">
+    <div class="tag">🗺 14天13夜</div>
+    <div class="tag">⛰ 神山聖湖</div>
+    <div class="tag">🙏 岡仁波齊轉山</div>
+    <div class="tag">🇨🇳 香港出發</div>
+  </div>
+</header>
+
+<!-- PROGRESS -->
+<div class="trip-progress">
+  <span class="progress-label">行程進度</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="today-badge" id="todayBadge">計算中…</div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="overview">
+  <div class="overview-item">
+    <div class="ov-num">14</div>
+    <div class="ov-label">行程天數</div>
+  </div>
+  <div class="overview-item">
+    <div class="ov-num">3</div>
+    <div class="ov-label">轉山天數</div>
+  </div>
+  <div class="overview-item">
+    <div class="ov-num">5630</div>
+    <div class="ov-label">最高海拔（米）</div>
+  </div>
+  <div class="overview-item">
+    <div class="ov-num">6</div>
+    <div class="ov-label">大區域</div>
+  </div>
+</div>
+
+<!-- ALTITUDE VISUAL -->
+<div class="altitude-bar">
+  <div class="alt-segment" style="background:#4A7A9B; flex:2;">拉薩<br>3650m</div>
+  <div class="alt-segment" style="background:#6B8C6A; flex:1;">日喀則<br>3836m</div>
+  <div class="alt-segment" style="background:#8B7355; flex:1;">薩嘎<br>4640m</div>
+  <div class="alt-segment" style="background:#6B4226; flex:2;">塔欽·阿里<br>4600m</div>
+  <div class="alt-segment" style="background:#4A3728; flex:3;"><strong>轉山</strong><br>5630m</div>
+  <div class="alt-segment" style="background:#6B8C6A; flex:1;">返回<br>3836m</div>
+  <div class="alt-segment" style="background:#4A7A9B; flex:2;">拉薩<br>3650m</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CHAPTER 1 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第一章 · 抵達聖城</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 1 -->
+  <div class="day-card" data-date="2025-05-16">
+    <div class="day-date">
+      <div class="day-num">16</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週五</div>
+      <div class="day-index">Day 1</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-lhasa"></div>
+        <div class="location-name">抵達拉薩</div>
+      </div>
+      <div class="day-activities">
+        搭乘飛機抵達拉薩貢嘎機場，導遊哈達接機🧣<br>
+        辦理入住，適應高原環境，<span class="highlight">切忌劇烈運動</span>。<br>
+        晚上可自由漫步觀賞<strong>布達拉宮夜景</strong> ✨
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 拉薩殊胜·供氧酒店</div>
+        <div class="meta-chip chip-red">⚠ 高反注意</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 2 -->
+  <div class="day-card" data-date="2025-05-17">
+    <div class="day-date">
+      <div class="day-num">17</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週六</div>
+      <div class="day-index">Day 2</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-lhasa"></div>
+        <div class="location-name">拉薩市內</div>
+      </div>
+      <div class="day-activities">
+        🏯 <strong>布達拉宮</strong> — 世界屋脊上的宮殿，藏傳佛教聖地<br>
+        🕌 <strong>大昭寺</strong> — 拜謁千年聖寺，感受朝聖者的虔誠<br>
+        🛍 <strong>八廓街</strong> — 環繞大昭寺的轉經道，尋找紀念品
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 拉薩殊胜·供氧酒店</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 2 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第二章 · 西行日喀則</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 3 -->
+  <div class="day-card" data-date="2025-05-18">
+    <div class="day-date">
+      <div class="day-num">18</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週日</div>
+      <div class="day-index">Day 3</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-lhasa"></div>
+        <div class="location-name">拉薩</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-shigatse"></div>
+        <div class="location-name">日喀則</div>
+      </div>
+      <div class="day-activities">
+        🏔 <strong>羊卓雍措</strong> — 西藏三大聖湖之一，碧藍如玉<br>
+        🧊 <strong>卡若拉冰川</strong> — 壯觀的大陸型冰川<br>
+        ⛩ <strong>白居寺</strong> — 獨特的班廓曲典，融匯三教<br>
+        🏯 <strong>江孜宗山</strong> — 抗英遺址
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 日喀則四星酒店供氧</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 3 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第三章 · 深入阿里</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 4 -->
+  <div class="day-card" data-date="2025-05-19">
+    <div class="day-date">
+      <div class="day-num">19</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週一</div>
+      <div class="day-index">Day 4</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-shigatse"></div>
+        <div class="location-name">日喀則</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-ali"></div>
+        <div class="location-name">薩嘎</div>
+      </div>
+      <div class="day-activities">
+        長途駕車穿越高原，欣賞無盡的藏西風光。抵達薩嘎（海拔4640m）休整。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 薩嘎涉外同級賓館</div>
+        <div class="meta-chip chip-alt">🌬 海拔升高</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 5 -->
+  <div class="day-card" data-date="2025-05-20">
+    <div class="day-date">
+      <div class="day-num">20</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週二</div>
+      <div class="day-index">Day 5</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-ali"></div>
+        <div class="location-name">薩嘎</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-kailash"></div>
+        <div class="location-name">塔爾欽</div>
+      </div>
+      <div class="day-activities">
+        🏜 <strong>仲巴五彩沙漠</strong> — 色彩斑斕的荒漠奇觀<br>
+        🦙 <strong>帕羊</strong> — 野生藏羚羊棲息地<br>
+        🏔 <strong>初見岡仁波齊</strong> — 神山現身！瑪旁雍錯、岡仁波齊聖湖聖山
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 塔欽涉外同級賓館</div>
+        <div class="meta-chip chip-red">🙏 神山初見</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 4 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第四章 · 轉山朝聖 · 最神聖的三天</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 6 -->
+  <div class="day-card" data-date="2025-05-21" style="border-left: 3px solid #4A3728;">
+    <div class="day-date" style="background: #2C1F14;">
+      <div class="day-num" style="color: #D4860A;">21</div>
+      <div class="day-month" style="color: #8B7355;">五月</div>
+      <div class="day-week" style="color:#8B7355;">週三</div>
+      <div class="day-index" style="color:#6B5535;">轉山1</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-kailash"></div>
+        <div class="location-name">塔欽 → 止熱寺</div>
+      </div>
+      <div class="day-activities">
+        <span class="highlight">🕉 轉山第一天</span>！正式踏上轉山朝聖之路。<br>
+        沿岡仁波齊北坡徒步，途經蓮花生大師修行洞。<br>
+        抵達<strong>止熱寺</strong>（海拔約4900m）休息。<br>
+        <em>徒步約18公里</em>
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-red">🛏 止熱寺床位（多人間）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7 -->
+  <div class="day-card" data-date="2025-05-22" style="border-left: 3px solid #4A3728;">
+    <div class="day-date" style="background: #2C1F14;">
+      <div class="day-num" style="color: #D4860A;">22</div>
+      <div class="day-month" style="color: #8B7355;">五月</div>
+      <div class="day-week" style="color:#8B7355;">週四</div>
+      <div class="day-index" style="color:#6B5535;">轉山2</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-kailash"></div>
+        <div class="location-name">止熱寺 → 尊珠寺</div>
+      </div>
+      <div class="day-activities">
+        <span class="highlight">🏔 最艱難的一天！</span><br>
+        翻越<strong>卓瑪拉山口（海拔5630米）</strong> — 轉山最高點🗻<br>
+        山口插滿經幡，祈禱聲迴盪高原。<br>
+        下坡抵達尊珠寺。<em>徒步約19公里</em>
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-red">🛏 尊珠寺床位（多人間）</div>
+        <div class="meta-chip" style="background:rgba(74,55,40,0.1);color:#8B5E3C;border:1px solid rgba(74,55,40,0.3);">⛰ 5630m最高點</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 8 -->
+  <div class="day-card" data-date="2025-05-23" style="border-left: 3px solid #4A3728;">
+    <div class="day-date" style="background: #2C1F14;">
+      <div class="day-num" style="color: #D4860A;">23</div>
+      <div class="day-month" style="color: #8B7355;">五月</div>
+      <div class="day-week" style="color:#8B7355;">週五</div>
+      <div class="day-index" style="color:#6B5535;">轉山3</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-kailash"></div>
+        <div class="location-name">仲哲普寺 → 塔欽 → 札達</div>
+      </div>
+      <div class="day-activities">
+        <span class="highlight">🎉 轉山圓滿完成！</span><br>
+        經過仲哲普寺，抵達塔欽，完成神聖一圈。<br>
+        下午驅車前往古格王朝所在地<strong>札達</strong>。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 札達涉外同級賓館</div>
+        <div class="meta-chip chip-alt">✅ 轉山完成</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 5 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第五章 · 古格王朝遺跡</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 9 -->
+  <div class="day-card" data-date="2025-05-24">
+    <div class="day-date">
+      <div class="day-num">24</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週六</div>
+      <div class="day-index">Day 9</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-ali"></div>
+        <div class="location-name">札達 · 古格</div>
+      </div>
+      <div class="day-activities">
+        🏯 <strong>古格王朝遺址</strong> — 神秘消失的千年王朝<br>
+        🏜 <strong>札達土林</strong> — 大地雕刻的壯觀土柱群<br>
+        🔍 東嘎皮央、托林寺（自費，根據情況）<br>
+        下午驅車返回塔欽。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 塔欽涉外同級賓館</div>
+        <div class="meta-chip chip-red">💰 部分景點自費</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 10 -->
+  <div class="day-card" data-date="2025-05-25">
+    <div class="day-date">
+      <div class="day-num">25</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週日</div>
+      <div class="day-index">Day 10</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-kailash"></div>
+        <div class="location-name">塔欽</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-ali"></div>
+        <div class="location-name">薩嘎</div>
+      </div>
+      <div class="day-activities">
+        長途返程，沿途再覽阿里無邊風光。抵達薩嘎休整。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 薩嘎涉外同級賓館</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 6 -->
+  <div class="chapter">
+    <div class="chapter-line"></div>
+    <div class="chapter-title">第六章 · 歸途拉薩</div>
+    <div class="chapter-line"></div>
+  </div>
+
+  <!-- Day 11 -->
+  <div class="day-card" data-date="2025-05-26">
+    <div class="day-date">
+      <div class="day-num">26</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週一</div>
+      <div class="day-index">Day 11</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-ali"></div>
+        <div class="location-name">薩嘎</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-shigatse"></div>
+        <div class="location-name">日喀則</div>
+      </div>
+      <div class="day-activities">
+        沿雅魯藏布江行駛，返回後藏中心城市日喀則。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 日喀則四星酒店供氧</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 12 -->
+  <div class="day-card" data-date="2025-05-27">
+    <div class="day-date">
+      <div class="day-num">27</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週二</div>
+      <div class="day-index">Day 12</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-shigatse"></div>
+        <div class="location-name">日喀則</div>
+        <div class="route-arrow">→</div>
+        <div class="location-dot cat-lhasa"></div>
+        <div class="location-name">拉薩</div>
+      </div>
+      <div class="day-activities">
+        ☸ <strong>扎什倫布寺</strong> — 班禪喇嘛駐錫地，感受莊嚴梵音<br>
+        傍晚返回拉薩。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 拉薩殊胜·供氧酒店</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 13 -->
+  <div class="day-card" data-date="2025-05-28">
+    <div class="day-date">
+      <div class="day-num">28</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週三</div>
+      <div class="day-index">Day 13</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot cat-lhasa"></div>
+        <div class="location-name">拉薩 · 扎葉巴寺</div>
+      </div>
+      <div class="day-activities">
+        🙏 <strong>扎葉巴寺</strong> — 藏傳佛教著名隱修聖地，蓮花生大師加持道場<br>
+        最後一晚，在拉薩好好休息，回味這段神聖旅程。
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-hotel">🏨 拉薩殊胜·供氧酒店</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 14 -->
+  <div class="day-card" data-date="2025-05-29">
+    <div class="day-date">
+      <div class="day-num">29</div>
+      <div class="day-month">五月</div>
+      <div class="day-week">週四</div>
+      <div class="day-index">Day 14</div>
+    </div>
+    <div class="day-body">
+      <div class="day-location">
+        <div class="location-dot" style="background:#9B59B6;"></div>
+        <div class="location-name">旅程圓滿結束</div>
+      </div>
+      <div class="day-activities">
+        🛫 送機 / 送站，帶著對神山聖湖的深刻記憶，踏上回家的路。<br>
+        <span class="highlight">願此行功德，迴向眾生 🙏</span>
+      </div>
+      <div class="day-meta">
+        <div class="meta-chip chip-alt">🏠 平安回家</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTE BOX -->
+  <div class="note-box">
+    <strong>📋 出行提醒</strong>
+    <ul>
+      <li>入藏函 + 邊防證</li>
+      <li>高反藥（紅景天）</li>
+      <li>防曬霜 SPF50+</li>
+      <li>保暖衣物（晚上零下）</li>
+      <li>轉山備好登山杖</li>
+      <li>現金（阿里地區少ATM）</li>
+      <li>相機 / 充電寶</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-title">西藏域龍旅行社</div>
+  <div class="footer-sub">Tibet Dragon Land Travel Service Co., Ltd</div>
+  <div class="footer-contact">
+    官網：<a href="https://www.xizanglvyou.org/" target="_blank">www.xizanglvyou.org</a>　
+    客服：瑩瑩　<strong>13659507238</strong>（電話同微信）
+  </div>
+</footer>
+<div class="border-bottom-deco"></div>
+
+<script>
+// Dates & progress
+const startDate = new Date('2025-05-16');
+const endDate   = new Date('2025-05-29');
+const today     = new Date();
+today.setHours(0,0,0,0);
+
+const totalDays = (endDate - startDate) / 86400000 + 1;
+const elapsed   = Math.max(0, Math.min(totalDays, (today - startDate) / 86400000));
+const pct = (elapsed / totalDays * 100).toFixed(1);
+
+document.getElementById('progressFill').style.width = pct + '%';
+
+if (today < startDate) {
+  const days = Math.ceil((startDate - today) / 86400000);
+  document.getElementById('todayBadge').textContent = `還有 ${days} 天出發`;
+} else if (today > endDate) {
+  document.getElementById('todayBadge').textContent = '旅程已結束';
+  document.getElementById('todayBadge').style.background = '#6B8C6A';
+} else {
+  const dayNum = Math.floor((today - startDate) / 86400000) + 1;
+  document.getElementById('todayBadge').textContent = `今天是第 ${dayNum} 天`;
+}
+
+// Mark today / past cards
+document.querySelectorAll('.day-card').forEach(card => {
+  const d = new Date(card.dataset.date);
+  d.setHours(0,0,0,0);
+  if (d.getTime() === today.getTime()) card.classList.add('today');
+  else if (d < today) card.classList.add('past');
+});
+
+// Intersection observer
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.day-card').forEach((c, i) => {
+  c.style.transitionDelay = (i % 3) * 60 + 'ms';
+  obs.observe(c);
+});
+</script>
+</body>
+</html>
