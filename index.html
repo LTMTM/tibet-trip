@@ -322,6 +322,42 @@ footer {
 
 footer a { color: var(--sky); text-decoration: none; }
 
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px 16px;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+#progressText {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--accent), var(--red));
+  border-radius: 99px;
+  width: 0%;
+  transition: width 1s ease;
+}
+
 @media (max-width: 500px) {
   .cost-item { padding: 0 10px; }
   .cost-num { font-size: 1.1rem; }
@@ -361,7 +397,17 @@ footer a { color: var(--sky); text-decoration: none; }
   </div>
 </header>
 
-
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-labels">
+    <span>出發 5/16</span>
+    <span id="progressText"></span>
+    <span>結束 5/29</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
 
 <!-- MAIN -->
 <div class="main">
@@ -716,9 +762,29 @@ footer a { color: var(--sky); text-decoration: none; }
 </footer>
 
 <script>
-// ── Countdown ──
+// ── Shared dates ──
 const tripStart = new Date('2026-05-16T00:00:00');
 const tripEnd   = new Date('2026-05-29T23:59:59');
+
+// ── Progress bar ──
+(function() {
+  const now = new Date();
+  if (now >= tripStart && now <= tripEnd) {
+    const pct = Math.min(100, ((now - tripStart) / (tripEnd - tripStart)) * 100).toFixed(1);
+    document.getElementById('progressFill').style.width = pct + '%';
+    const dayNum = Math.floor((now - tripStart) / 86400000) + 1;
+    document.getElementById('progressText').textContent = `第 ${dayNum} 天 · ${pct}%`;
+  } else if (now > tripEnd) {
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = '已完成 100%';
+    document.getElementById('progressText').style.color = 'var(--green)';
+  } else {
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressText').textContent = '未開始';
+  }
+})();
+
+// ── Countdown ──
 
 function updateCountdown() {
   const now  = new Date();
