@@ -358,10 +358,205 @@ footer a { color: var(--sky); text-decoration: none; }
   transition: width 1s ease;
 }
 
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 90;
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 13px 22px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fab:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.fab:active { transform: translateY(0); }
+
+/* ── BOTTOM SHEET ── */
+.sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 150;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-overlay.open { display: flex; }
+
+.sheet {
+  background: var(--white);
+  width: 100%;
+  max-width: 680px;
+  max-height: 82vh;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+}
+.sheet-overlay.open .sheet { transform: translateY(0); }
+
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sheet-title { font-size: 1rem; font-weight: 700; }
+.sheet-close {
+  background: var(--bg); border: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.sheet-body {
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 32px;
+}
+
+/* ── CALC SECTIONS (shared) ── */
+.calc-section {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.calc-section-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+
+
+.pool-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.pool-box { text-align: center; }
+.pool-box-label { font-size: 0.68rem; color: var(--muted); margin-bottom: 3px; }
+.pool-box-val { font-size: 1.1rem; font-weight: 700; }
+
+/* Expense list */
+.exp-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+.exp-item:last-child { border-bottom: none; }
+.exp-desc { flex: 1; }
+.exp-payer { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+.exp-amount { font-weight: 600; min-width: 60px; text-align: right; }
+.exp-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--border); font-size: 1rem; padding: 0 4px;
+  transition: color 0.2s;
+}
+.exp-del:hover { color: var(--red); }
+
+.empty-msg { font-size: 0.82rem; color: var(--muted); text-align: center; padding: 12px 0; }
+
+/* Settlement */
+.settle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+.settle-row:last-child { border-bottom: none; }
+.settle-arrow { color: var(--muted); font-size: 0.8rem; }
+.settle-amount { font-weight: 600; color: var(--red); }
+.settle-ok { font-weight: 600; color: var(--green); }
+
+/* Add button */
+.add-btn {
+  background: var(--text); color: white;
+  border: none; border-radius: 6px;
+  padding: 5px 12px; font-size: 0.78rem;
+  cursor: pointer; font-family: inherit;
+  transition: opacity 0.2s;
+}
+.add-btn:hover { opacity: 0.75; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 24px;
+  width: min(420px, 92vw);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+.modal-label { display: block; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; margin: 12px 0 5px; text-transform: uppercase; }
+.modal-input {
+  width: 100%; border: 1px solid var(--border);
+  border-radius: 7px; padding: 9px 12px;
+  font-size: 0.9rem; font-family: inherit;
+  outline: none; transition: border-color 0.2s;
+}
+.modal-input:focus { border-color: var(--accent); }
+.modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+.modal-cancel {
+  flex: 1; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 7px;
+  padding: 10px; font-size: 0.88rem; cursor: pointer; font-family: inherit;
+}
+.modal-confirm {
+  flex: 2; background: var(--text); color: white;
+  border: none; border-radius: 7px;
+  padding: 10px; font-size: 0.88rem; cursor: pointer; font-family: inherit;
+  transition: opacity 0.2s;
+}
+.modal-confirm:hover { opacity: 0.8; }
+
 @media (max-width: 500px) {
-  .cost-item { padding: 0 10px; }
-  .cost-num { font-size: 1.1rem; }
-  .card-title { font-size: 0.88rem; }
+  .pool-grid { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  .pool-input { font-size: 0.78rem; padding: 6px 4px; }
 }
 </style>
 </head>
@@ -755,6 +950,75 @@ footer a { color: var(--sky); text-decoration: none; }
 
 </div>
 
+<!-- FLOATING BUTTON -->
+<button class="fab" onclick="openCalc()">💰 計數</button>
+
+<!-- CALCULATOR BOTTOM SHEET -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeCalcOut(event)">
+  <div class="sheet" id="calcSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">💰 計數</div>
+      <button class="sheet-close" onclick="closeCalc()">✕</button>
+    </div>
+    <div class="sheet-body">
+
+      <!-- POOL -->
+      <div class="calc-section">
+        <div class="calc-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>每人供公數</span>
+          <button class="add-btn" onclick="openPoolModal()">＋ 新增</button>
+        </div>
+        <div id="poolList"><div class="empty-msg">未有供款記錄</div></div>
+        <div class="pool-summary" id="poolSummary" style="display:none;">
+          <div class="pool-box"><div class="pool-box-label">公數總額</div><div class="pool-box-val" id="poolTotal">¥0</div></div>
+          <div class="pool-box"><div class="pool-box-label">已用</div><div class="pool-box-val" id="poolUsed">¥0</div></div>
+          <div class="pool-box"><div class="pool-box-label">結餘</div><div class="pool-box-val" id="poolRemain">¥0</div></div>
+        </div>
+      </div>
+
+      <!-- EXPENSES -->
+      <div class="calc-section">
+        <div class="calc-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>共同支出</span>
+          <button class="add-btn" onclick="openModal()">＋ 新增</button>
+        </div>
+        <div id="expList"><div class="empty-msg">未有支出記錄</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- POOL MODAL -->
+<div class="modal-overlay" id="poolModalOverlay" onclick="closePoolModalOut(event)">
+  <div class="modal">
+    <div class="modal-title">新增供款</div>
+    <label class="modal-label">每人供款金額 (¥)</label>
+    <input class="modal-input" id="pAmount" type="number" placeholder="0" min="0">
+    <div style="margin-top:10px;font-size:0.78rem;color:var(--muted);">5人合共 <strong id="pTotal" style="color:var(--accent)">¥0</strong></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closePoolModal()">取消</button>
+      <button class="modal-confirm" onclick="addPool()">確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
+  <div class="modal">
+    <div class="modal-title">新增共同支出</div>
+    <label class="modal-label">描述</label>
+    <input class="modal-input" id="mDesc" type="text" placeholder="例如：餐飲、駄夫、景點…">
+    <label class="modal-label">金額 (¥)</label>
+    <input class="modal-input" id="mAmount" type="number" placeholder="0" min="0">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">取消</button>
+      <button class="modal-confirm" onclick="addExpense()">確認</button>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   西藏域龍旅行社有限公司　客服：瑩瑩　<strong>13659507238</strong>（電話同微信）<br>
@@ -848,6 +1112,131 @@ document.querySelectorAll('.day-card').forEach((c, i) => {
   c.style.transitionDelay = (i % 4) * 40 + 'ms';
   obs.observe(c);
 });
+// ── Calculator sheet ──
+function openCalc() {
+  document.getElementById('sheetOverlay').classList.add('open');
+}
+function closeCalc() {
+  document.getElementById('sheetOverlay').classList.remove('open');
+}
+function closeCalcOut(e) {
+  if (e.target === document.getElementById('sheetOverlay')) closeCalc();
+}
+
+// ── EXPENSE CALCULATOR ──
+const NAMES = ['人1', '人2', '人3', '人4', '人5'];
+let expenses = [];
+let poolEntries = [];
+
+// Pool modal
+function openPoolModal() {
+  document.getElementById('pAmount').value = '';
+  document.getElementById('pTotal').textContent = '¥0';
+  document.getElementById('poolModalOverlay').classList.add('open');
+  document.getElementById('pAmount').focus();
+}
+function closePoolModal() {
+  document.getElementById('poolModalOverlay').classList.remove('open');
+}
+function closePoolModalOut(e) {
+  if (e.target === document.getElementById('poolModalOverlay')) closePoolModal();
+}
+document.getElementById('pAmount').addEventListener('input', function() {
+  const v = parseFloat(this.value) || 0;
+  document.getElementById('pTotal').textContent = '¥' + (v * NAMES.length).toFixed(0);
+});
+
+function addPool() {
+  const perPerson = parseFloat(document.getElementById('pAmount').value);
+  if (!perPerson || perPerson <= 0) return;
+  poolEntries.push({ id: Date.now(), perPerson });
+  closePoolModal();
+  renderPool();
+  updateSummary();
+}
+
+function deletePool(id) {
+  poolEntries = poolEntries.filter(p => p.id !== id);
+  renderPool();
+  updateSummary();
+}
+
+function renderPool() {
+  const el = document.getElementById('poolList');
+  const summary = document.getElementById('poolSummary');
+  if (poolEntries.length === 0) {
+    el.innerHTML = '<div class="empty-msg">未有供款記錄</div>';
+    summary.style.display = 'none';
+    return;
+  }
+  summary.style.display = 'grid';
+  el.innerHTML = poolEntries.map((p, i) => `
+    <div class="exp-item">
+      <div class="exp-desc">第${i+1}次供款（每人 ¥${p.perPerson.toFixed(0)}）</div>
+      <div class="exp-amount">合共 ¥${(p.perPerson * NAMES.length).toFixed(0)}</div>
+      <button class="exp-del" onclick="deletePool(${p.id})">✕</button>
+    </div>`).join('');
+}
+
+function getPool() {
+  return poolEntries.reduce((a, p) => a + p.perPerson * NAMES.length, 0);
+}
+
+function updateSummary() {
+  const total = getPool();
+  const used  = expenses.reduce((a, e) => a + e.amount, 0);
+  const remain = total - used;
+  document.getElementById('poolTotal').textContent = '¥' + total.toFixed(0);
+  document.getElementById('poolUsed').textContent  = '¥' + used.toFixed(0);
+  const remEl = document.getElementById('poolRemain');
+  remEl.textContent = (remain < 0 ? '-¥' : '¥') + Math.abs(remain).toFixed(0);
+  remEl.style.color = remain < 0 ? 'var(--red)' : 'var(--green)';
+}
+
+function openModal() {
+  document.getElementById('mDesc').value = '';
+  document.getElementById('mAmount').value = '';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('mDesc').focus();
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOut(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function addExpense() {
+  const desc = document.getElementById('mDesc').value.trim();
+  const amount = parseFloat(document.getElementById('mAmount').value);
+  if (!desc || !amount || amount <= 0) return;
+  expenses.push({ id: Date.now(), desc, amount });
+  closeModal();
+  renderExpenses();
+  updateSummary();
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  renderExpenses();
+  updateSummary();
+}
+
+function renderExpenses() {
+  const el = document.getElementById('expList');
+  if (expenses.length === 0) {
+    el.innerHTML = '<div class="empty-msg">未有支出記錄</div>';
+    return;
+  }
+  el.innerHTML = expenses.map(e => `
+    <div class="exp-item">
+      <div class="exp-desc">${e.desc}</div>
+      <div class="exp-amount">¥${e.amount.toFixed(0)}</div>
+      <button class="exp-del" onclick="deleteExpense(${e.id})">✕</button>
+    </div>`).join('');
+}
+
+
 </script>
 </body>
 </html>
