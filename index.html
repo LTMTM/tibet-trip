@@ -963,6 +963,14 @@ footer a { color: var(--sky); text-decoration: none; }
     </div>
     <div class="sheet-body">
 
+      <!-- SYNC -->
+      <div class="calc-section" id="syncSection">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.15em;color:var(--muted);text-transform:uppercase;">即時同步</div>
+          <div id="syncStatus" style="font-size:0.72rem;color:var(--muted);">連線中…</div>
+        </div>
+      </div>
+
       <!-- POOL -->
       <div class="calc-section">
         <div class="calc-section-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -1125,8 +1133,55 @@ function closeCalcOut(e) {
 
 // ── EXPENSE CALCULATOR ──
 const NAMES = ['人1', '人2', '人3', '人4', '人5'];
-let expenses = [];
+let expenses    = [];
 let poolEntries = [];
+let gun, gunNode;
+let ignoreUpdate = false;
+
+function setStatus(msg, color) {
+  const el = document.getElementById('syncStatus');
+  if (el) { el.textContent = msg; el.style.color = color || 'var(--muted)'; }
+}
+
+function initGun() {
+  gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://gun-us.herokuapp.com/gun']);
+  gunNode = gun.get('tibet_trip_2026_data');
+  gunNode.on(function(data) {
+    if (!data || ignoreUpdate) return;
+    try {
+      const d = JSON.parse(data);
+      expenses    = d.expenses    || [];
+      poolEntries = d.poolEntries || [];
+      saveLocal();
+      renderPool(); renderExpenses(); updateSummary();
+      setStatus('已同步 ✓', 'var(--green)');
+    } catch(e) {}
+  });
+  setStatus('已連線 ✓', 'var(--green)');
+}
+
+function saveLocal() {
+  localStorage.setItem('tibet_expenses', JSON.stringify(expenses));
+  localStorage.setItem('tibet_pool',     JSON.stringify(poolEntries));
+}
+
+function saveData() {
+  saveLocal();
+  if (!gunNode) return;
+  ignoreUpdate = true;
+  gunNode.put(JSON.stringify({ expenses, poolEntries }));
+  setTimeout(() => { ignoreUpdate = false; }, 1000);
+  setStatus('同步中…', 'var(--accent)');
+  setTimeout(() => setStatus('已同步 ✓', 'var(--green)'), 1200);
+}
+
+// Load local first, then Gun syncs on top
+expenses    = JSON.parse(localStorage.getItem('tibet_expenses') || '[]');
+poolEntries = JSON.parse(localStorage.getItem('tibet_pool')     || '[]');
+renderPool(); renderExpenses(); updateSummary();
+
+// Init Gun after page loads
+window.addEventListener('load', initGun);
 
 // Pool modal
 function openPoolModal() {
@@ -1150,6 +1205,7 @@ function addPool() {
   const perPerson = parseFloat(document.getElementById('pAmount').value);
   if (!perPerson || perPerson <= 0) return;
   poolEntries.push({ id: Date.now(), perPerson });
+  saveData();
   closePoolModal();
   renderPool();
   updateSummary();
@@ -1157,6 +1213,7 @@ function addPool() {
 
 function deletePool(id) {
   poolEntries = poolEntries.filter(p => p.id !== id);
+  saveData();
   renderPool();
   updateSummary();
 }
@@ -1211,6 +1268,7 @@ function addExpense() {
   const amount = parseFloat(document.getElementById('mAmount').value);
   if (!desc || !amount || amount <= 0) return;
   expenses.push({ id: Date.now(), desc, amount });
+  saveData();
   closeModal();
   renderExpenses();
   updateSummary();
@@ -1218,6 +1276,7 @@ function addExpense() {
 
 function deleteExpense(id) {
   expenses = expenses.filter(e => e.id !== id);
+  saveData();
   renderExpenses();
   updateSummary();
 }
@@ -1238,5 +1297,6 @@ function renderExpenses() {
 
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 </body>
 </html>
