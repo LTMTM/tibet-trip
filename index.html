@@ -559,6 +559,8 @@ footer a { color: var(--sky); text-decoration: none; }
   .pool-input { font-size: 0.78rem; padding: 6px 4px; }
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -1135,29 +1137,40 @@ function closeCalcOut(e) {
 const NAMES = ['人1', '人2', '人3', '人4', '人5'];
 let expenses    = [];
 let poolEntries = [];
-let gun, gunNode;
 let ignoreUpdate = false;
+let dbRef;
 
 function setStatus(msg, color) {
   const el = document.getElementById('syncStatus');
   if (el) { el.textContent = msg; el.style.color = color || 'var(--muted)'; }
 }
 
-function initGun() {
-  gun = Gun(['https://gun-manhattan.herokuapp.com/gun', 'https://gun-us.herokuapp.com/gun']);
-  gunNode = gun.get('tibet_trip_2026_data');
-  gunNode.on(function(data) {
-    if (!data || ignoreUpdate) return;
-    try {
-      const d = JSON.parse(data);
-      expenses    = d.expenses    || [];
-      poolEntries = d.poolEntries || [];
-      saveLocal();
-      renderPool(); renderExpenses(); updateSummary();
-      setStatus('已同步 ✓', 'var(--green)');
-    } catch(e) {}
+function initFirebase() {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBiPvAcc8xOMtptIGOmlVaXA6wg2BideYg",
+    authDomain: "tibet-trip.firebaseapp.com",
+    databaseURL: "https://tibet-trip-default-rtdb.firebaseio.com",
+    projectId: "tibet-trip",
+    storageBucket: "tibet-trip.firebasestorage.app",
+    messagingSenderId: "1054359873151",
+    appId: "1:1054359873151:web:02c63b9cfe9f5a7546814a"
+  };
+  firebase.initializeApp(firebaseConfig);
+  dbRef = firebase.database().ref('calcData');
+
+  // Listen for real-time updates
+  dbRef.on('value', (snapshot) => {
+    if (ignoreUpdate) return;
+    const data = snapshot.val();
+    if (!data) return;
+    expenses    = data.expenses    || [];
+    poolEntries = data.poolEntries || [];
+    saveLocal();
+    renderPool(); renderExpenses(); updateSummary();
+    setStatus('已同步 ✓', 'var(--green)');
   });
-  setStatus('已連線 ✓', 'var(--green)');
+
+  setStatus('連線中…', 'var(--muted)');
 }
 
 function saveLocal() {
@@ -1167,21 +1180,27 @@ function saveLocal() {
 
 function saveData() {
   saveLocal();
-  if (!gunNode) return;
+  if (!dbRef) return;
   ignoreUpdate = true;
-  gunNode.put(JSON.stringify({ expenses, poolEntries }));
-  setTimeout(() => { ignoreUpdate = false; }, 1000);
   setStatus('同步中…', 'var(--accent)');
-  setTimeout(() => setStatus('已同步 ✓', 'var(--green)'), 1200);
+  dbRef.set({ expenses, poolEntries })
+    .then(() => {
+      setStatus('已同步 ✓', 'var(--green)');
+      setTimeout(() => { ignoreUpdate = false; }, 800);
+    })
+    .catch(() => {
+      setStatus('同步失敗', 'var(--red)');
+      ignoreUpdate = false;
+    });
 }
 
-// Load local first, then Gun syncs on top
+// Load local first for instant display
 expenses    = JSON.parse(localStorage.getItem('tibet_expenses') || '[]');
 poolEntries = JSON.parse(localStorage.getItem('tibet_pool')     || '[]');
 renderPool(); renderExpenses(); updateSummary();
 
-// Init Gun after page loads
-window.addEventListener('load', initGun);
+// Init Firebase after page loads
+window.addEventListener('load', initFirebase);
 
 // Pool modal
 function openPoolModal() {
@@ -1297,6 +1316,5 @@ function renderExpenses() {
 
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 </body>
 </html>
