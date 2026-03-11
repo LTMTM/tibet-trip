@@ -359,25 +359,94 @@ footer a { color: var(--sky); text-decoration: none; }
 }
 
 /* ── FAB ── */
-.fab {
+.fab-group {
   position: fixed;
   bottom: 24px;
   right: 24px;
   z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+.fab {
   background: var(--text);
   color: white;
   border: none;
   border-radius: 100px;
-  padding: 13px 22px;
-  font-size: 0.9rem;
+  padding: 13px 20px;
+  font-size: 0.88rem;
   font-family: inherit;
   font-weight: 500;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(0,0,0,0.25);
   transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
 }
 .fab:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 .fab:active { transform: translateY(0); }
+.fab-pack { background: var(--sky); }
+
+/* ── CHECKLIST ── */
+.pack-section {
+  margin-bottom: 6px;
+}
+.pack-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 0 6px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.pack-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 4px;
+}
+.pack-item:last-child { border-bottom: none; }
+.pack-item:hover { background: var(--bg); }
+.pack-item input[type=checkbox] {
+  width: 18px; height: 18px;
+  accent-color: var(--sky);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.pack-label {
+  font-size: 0.86rem;
+  flex: 1;
+  transition: color 0.2s;
+}
+.pack-item.done .pack-label {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.pack-note {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-style: italic;
+}
+.pack-progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.pack-progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--sky), var(--green));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
 
 /* ── BOTTOM SHEET ── */
 .sheet-overlay {
@@ -952,8 +1021,44 @@ footer a { color: var(--sky); text-decoration: none; }
 
 </div>
 
-<!-- FLOATING BUTTON -->
-<button class="fab" onclick="openCalc()">💰 計數</button>
+<!-- FLOATING BUTTONS -->
+<div class="fab-group">
+  <button class="fab fab-calc" onclick="openCalc()">💰 計數</button>
+  <button class="fab fab-pack" onclick="openPack()">🎒 裝備</button>
+</div>
+
+<!-- PACKING CHECKLIST SHEET -->
+<div class="sheet-overlay" id="packOverlay" onclick="closePackOut(event)">
+  <div class="sheet" id="packSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <div class="sheet-title">🎒 轉山裝備清單</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div id="packProgress" style="font-size:0.72rem;color:var(--muted);"></div>
+        <button class="add-btn" onclick="openAddItem()">＋ 新增</button>
+        <button class="sheet-close" onclick="closePack()">✕</button>
+      </div>
+    </div>
+    <div class="sheet-body" id="packBody"></div>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div class="modal-overlay" id="addItemOverlay" onclick="closeAddItemOut(event)">
+  <div class="modal">
+    <div class="modal-title">新增裝備</div>
+    <label class="modal-label">物品名稱</label>
+    <input class="modal-input" id="newItemLabel" type="text" placeholder="例如：護膝、急救包…">
+    <label class="modal-label">分類</label>
+    <select class="modal-input" id="newItemSection"></select>
+    <label class="modal-label">備注（可選）</label>
+    <input class="modal-input" id="newItemNote" type="text" placeholder="例如：每人一個">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeAddItem()">取消</button>
+      <button class="modal-confirm" onclick="confirmAddItem()">新增</button>
+    </div>
+  </div>
+</div>
 
 <!-- CALCULATOR BOTTOM SHEET -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeCalcOut(event)">
@@ -1139,6 +1244,7 @@ let expenses    = [];
 let poolEntries = [];
 let ignoreUpdate = false;
 let dbRef;
+let packRef;
 
 function setStatus(msg, color) {
   const el = document.getElementById('syncStatus');
@@ -1157,6 +1263,7 @@ function initFirebase() {
   };
   firebase.initializeApp(firebaseConfig);
   dbRef = firebase.database().ref('calcData');
+  packRef = firebase.database().ref('packData');
 
   // Listen for real-time updates
   dbRef.on('value', (snapshot) => {
@@ -1168,6 +1275,19 @@ function initFirebase() {
     saveLocal();
     renderPool(); renderExpenses(); updateSummary();
     setStatus('已同步 ✓', 'var(--green)');
+  });
+
+  // Listen for pack list changes (structure only, not checked state)
+  packRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      // First time: push defaults to Firebase
+      packRef.set(DEFAULT_PACK);
+      return;
+    }
+    packData = data;
+    localStorage.setItem('tibet_pack_data', JSON.stringify(packData));
+    renderPack();
   });
 
   setStatus('連線中…', 'var(--muted)');
@@ -1197,6 +1317,8 @@ function saveData() {
 // Load local first for instant display
 expenses    = JSON.parse(localStorage.getItem('tibet_expenses') || '[]');
 poolEntries = JSON.parse(localStorage.getItem('tibet_pool')     || '[]');
+const cachedPack = localStorage.getItem('tibet_pack_data');
+if (cachedPack) packData = JSON.parse(cachedPack);
 renderPool(); renderExpenses(); updateSummary();
 
 // Init Firebase after page loads
@@ -1314,6 +1436,139 @@ function renderExpenses() {
     </div>`).join('');
 }
 
+
+// ── PACKING CHECKLIST ──
+const DEFAULT_PACK = [
+  { section: '行山大包', items: [
+    { id: 'sleeping_bag',   label: '睡袋' },
+    { id: 'mattress',       label: '一次性床墊' },
+    { id: 'pillow',         label: '枕頭' },
+    { id: 'headlamp',       label: '頭燈' },
+    { id: 'poles',          label: '行山杖' },
+    { id: 'water',          label: '水袋 / 水樽' },
+    { id: 'thermos',        label: '保暖壺' },
+    { id: 'neckwarmer',     label: '頸巾（擋風沙）' },
+    { id: 'sunglasses',     label: '太陽眼鏡' },
+    { id: 'sun_hat',        label: '帽（行山擋太陽）' },
+    { id: 'waterproof_bag', label: '防水袋' },
+    { id: 'towel_sport',    label: '汗巾' },
+  ]},
+  { section: '日常用品', items: [
+    { id: 'charger',      label: '充電器' },
+    { id: 'plug',         label: '插頭' },
+    { id: 'cable',        label: '充電線' },
+    { id: 'toothbrush',   label: '牙膏牙刷' },
+    { id: 'utensils',     label: '自備餐具' },
+    { id: 'towel',        label: '毛巾' },
+    { id: 'earplugs',     label: '耳塞', note: '鼠準備6對' },
+    { id: 'tissue',       label: '紙巾' },
+    { id: 'wet_wipes',    label: '濕紙巾' },
+    { id: 'trash_bag',    label: '垃圾袋' },
+    { id: 'toilet_paper', label: '廁紙' },
+  ]},
+  { section: '衣物', items: [
+    { id: 'warm_hat',      label: '帽（保暖）' },
+    { id: 'shirts',        label: '衫' },
+    { id: 'windbreaker',   label: '風褸' },
+    { id: 'warm_jacket',   label: '保暖褸' },
+    { id: 'slippers',      label: '拖鞋' },
+    { id: 'socks',         label: '襪（防雨濕）' },
+    { id: 'hiking_shoes',  label: '行山鞋' },
+  ]}
+];
+
+let packData    = DEFAULT_PACK; // will be overwritten by Firebase
+let packChecked = JSON.parse(localStorage.getItem('tibet_pack') || '{}');
+
+function savePackChecked() {
+  localStorage.setItem('tibet_pack', JSON.stringify(packChecked));
+}
+
+function savePackData() {
+  if (packRef) {
+    packRef.set(packData);
+  }
+  localStorage.setItem('tibet_pack_data', JSON.stringify(packData));
+}
+
+function renderPack() {
+  const body     = document.getElementById('packBody');
+  const allItems = packData.flatMap(s => s.items);
+  const total    = allItems.length;
+  const checked  = allItems.filter(i => packChecked[i.id]).length;
+  const pct      = total ? Math.round(checked / total * 100) : 0;
+
+  document.getElementById('packProgress').textContent = `${checked} / ${total}`;
+
+  body.innerHTML =
+    `<div class="pack-progress-bar"><div class="pack-progress-fill" style="width:${pct}%"></div></div>` +
+    packData.map(section => `
+      <div class="pack-section">
+        <div class="pack-section-title">${section.section}</div>
+        ${section.items.map(item => `
+          <div class="pack-item ${packChecked[item.id] ? 'done' : ''}" onclick="togglePack('${item.id}')">
+            <input type="checkbox" ${packChecked[item.id] ? 'checked' : ''} onclick="event.stopPropagation();togglePack('${item.id}')">
+            <span class="pack-label">${item.label}</span>
+            ${item.note ? `<span class="pack-note">${item.note}</span>` : ''}
+            <button class="exp-del" onclick="event.stopPropagation();deletePackItem('${section.section}','${item.id}')">✕</button>
+          </div>`).join('')}
+      </div>`).join('');
+}
+
+function togglePack(id) {
+  packChecked[id] = !packChecked[id];
+  savePackChecked();
+  renderPack();
+}
+
+function deletePackItem(sectionName, id) {
+  const sec = packData.find(s => s.section === sectionName);
+  if (!sec) return;
+  sec.items = sec.items.filter(i => i.id !== id);
+  delete packChecked[id];
+  savePackChecked();
+  savePackData();
+  renderPack();
+}
+
+// Add item modal
+function openAddItem() {
+  document.getElementById('newItemLabel').value = '';
+  document.getElementById('newItemNote').value  = '';
+  const sel = document.getElementById('newItemSection');
+  sel.innerHTML = packData.map(s => `<option value="${s.section}">${s.section}</option>`).join('');
+  document.getElementById('addItemOverlay').classList.add('open');
+  document.getElementById('newItemLabel').focus();
+}
+function closeAddItem() {
+  document.getElementById('addItemOverlay').classList.remove('open');
+}
+function closeAddItemOut(e) {
+  if (e.target === document.getElementById('addItemOverlay')) closeAddItem();
+}
+function confirmAddItem() {
+  const label = document.getElementById('newItemLabel').value.trim();
+  if (!label) return;
+  const sectionName = document.getElementById('newItemSection').value;
+  const note  = document.getElementById('newItemNote').value.trim();
+  const id    = 'custom_' + Date.now();
+  const sec   = packData.find(s => s.section === sectionName);
+  if (sec) sec.items.push({ id, label, ...(note ? { note } : {}) });
+  savePackData();
+  closeAddItem();
+  renderPack();
+}
+
+function openPack() {
+  renderPack();
+  document.getElementById('packOverlay').classList.add('open');
+}
+function closePack() {
+  document.getElementById('packOverlay').classList.remove('open');
+}
+function closePackOut(e) {
+  if (e.target === document.getElementById('packOverlay')) closePack();
+}
 
 </script>
 </body>
