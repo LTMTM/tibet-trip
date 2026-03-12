@@ -1246,6 +1246,50 @@ let ignoreUpdate = false;
 let dbRef;
 let packRef;
 
+// ── PACK DATA (declared early so Firebase listeners can use them) ──
+const DEFAULT_PACK = [
+  { section: '行山大包', items: [
+    { id: 'sleeping_bag',   label: '睡袋' },
+    { id: 'mattress',       label: '一次性床墊' },
+    { id: 'pillow',         label: '枕頭' },
+    { id: 'headlamp',       label: '頭燈' },
+    { id: 'poles',          label: '行山杖' },
+    { id: 'water',          label: '水袋 / 水樽' },
+    { id: 'thermos',        label: '保暖壺' },
+    { id: 'neckwarmer',     label: '頸巾（擋風沙）' },
+    { id: 'sunglasses',     label: '太陽眼鏡' },
+    { id: 'sun_hat',        label: '帽（行山擋太陽）' },
+    { id: 'waterproof_bag', label: '防水袋' },
+    { id: 'towel_sport',    label: '汗巾' },
+  ]},
+  { section: '日常用品', items: [
+    { id: 'charger',      label: '充電器' },
+    { id: 'plug',         label: '插頭' },
+    { id: 'cable',        label: '充電線' },
+    { id: 'toothbrush',   label: '牙膏牙刷' },
+    { id: 'utensils',     label: '自備餐具' },
+    { id: 'towel',        label: '毛巾' },
+    { id: 'earplugs',     label: '耳塞', note: '鼠準備6對' },
+    { id: 'tissue',       label: '紙巾' },
+    { id: 'wet_wipes',    label: '濕紙巾' },
+    { id: 'trash_bag',    label: '垃圾袋' },
+    { id: 'toilet_paper', label: '廁紙' },
+  ]},
+  { section: '衣物', items: [
+    { id: 'warm_hat',      label: '帽（保暖）' },
+    { id: 'shirts',        label: '衫' },
+    { id: 'windbreaker',   label: '風褸' },
+    { id: 'warm_jacket',   label: '保暖褸' },
+    { id: 'slippers',      label: '拖鞋' },
+    { id: 'socks',         label: '襪（防雨濕）' },
+    { id: 'hiking_shoes',  label: '行山鞋' },
+  ]}
+];
+
+const cachedPack = localStorage.getItem('tibet_pack_data');
+let packData    = cachedPack ? JSON.parse(cachedPack) : DEFAULT_PACK;
+let packChecked = JSON.parse(localStorage.getItem('tibet_pack') || '{}');
+
 function setStatus(msg, color) {
   const el = document.getElementById('syncStatus');
   if (el) { el.textContent = msg; el.style.color = color || 'var(--muted)'; }
@@ -1317,8 +1361,6 @@ function saveData() {
 // Load local first for instant display
 expenses    = JSON.parse(localStorage.getItem('tibet_expenses') || '[]');
 poolEntries = JSON.parse(localStorage.getItem('tibet_pool')     || '[]');
-const cachedPack = localStorage.getItem('tibet_pack_data');
-if (cachedPack) packData = JSON.parse(cachedPack);
 renderPool(); renderExpenses(); updateSummary();
 
 // Init Firebase after page loads
@@ -1438,47 +1480,6 @@ function renderExpenses() {
 
 
 // ── PACKING CHECKLIST ──
-const DEFAULT_PACK = [
-  { section: '行山大包', items: [
-    { id: 'sleeping_bag',   label: '睡袋' },
-    { id: 'mattress',       label: '一次性床墊' },
-    { id: 'pillow',         label: '枕頭' },
-    { id: 'headlamp',       label: '頭燈' },
-    { id: 'poles',          label: '行山杖' },
-    { id: 'water',          label: '水袋 / 水樽' },
-    { id: 'thermos',        label: '保暖壺' },
-    { id: 'neckwarmer',     label: '頸巾（擋風沙）' },
-    { id: 'sunglasses',     label: '太陽眼鏡' },
-    { id: 'sun_hat',        label: '帽（行山擋太陽）' },
-    { id: 'waterproof_bag', label: '防水袋' },
-    { id: 'towel_sport',    label: '汗巾' },
-  ]},
-  { section: '日常用品', items: [
-    { id: 'charger',      label: '充電器' },
-    { id: 'plug',         label: '插頭' },
-    { id: 'cable',        label: '充電線' },
-    { id: 'toothbrush',   label: '牙膏牙刷' },
-    { id: 'utensils',     label: '自備餐具' },
-    { id: 'towel',        label: '毛巾' },
-    { id: 'earplugs',     label: '耳塞', note: '鼠準備6對' },
-    { id: 'tissue',       label: '紙巾' },
-    { id: 'wet_wipes',    label: '濕紙巾' },
-    { id: 'trash_bag',    label: '垃圾袋' },
-    { id: 'toilet_paper', label: '廁紙' },
-  ]},
-  { section: '衣物', items: [
-    { id: 'warm_hat',      label: '帽（保暖）' },
-    { id: 'shirts',        label: '衫' },
-    { id: 'windbreaker',   label: '風褸' },
-    { id: 'warm_jacket',   label: '保暖褸' },
-    { id: 'slippers',      label: '拖鞋' },
-    { id: 'socks',         label: '襪（防雨濕）' },
-    { id: 'hiking_shoes',  label: '行山鞋' },
-  ]}
-];
-
-let packData    = DEFAULT_PACK; // will be overwritten by Firebase
-let packChecked = JSON.parse(localStorage.getItem('tibet_pack') || '{}');
 
 function savePackChecked() {
   localStorage.setItem('tibet_pack', JSON.stringify(packChecked));
