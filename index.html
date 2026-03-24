@@ -623,6 +623,27 @@ footer a { color: var(--sky); text-decoration: none; }
 }
 .modal-confirm:hover { opacity: 0.8; }
 
+/* ── QUICK CHIPS ── */
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.chip:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.chip.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
 @media (max-width: 500px) {
   .pool-grid { grid-template-columns: repeat(5, 1fr); gap: 5px; }
   .pool-input { font-size: 0.78rem; padding: 6px 4px; }
@@ -1126,7 +1147,17 @@ footer a { color: var(--sky); text-decoration: none; }
     <label class="modal-label">日期</label>
     <input class="modal-input" id="mDate" type="date">
     <label class="modal-label">描述</label>
-    <input class="modal-input" id="mDesc" type="text" placeholder="例如：餐飲、駄夫、景點…">
+    <div class="quick-chips">
+      <button class="chip" onclick="setDesc('早餐')">早餐</button>
+      <button class="chip" onclick="setDesc('午餐')">午餐</button>
+      <button class="chip" onclick="setDesc('晚餐')">晚餐</button>
+      <button class="chip" onclick="setDesc('補給')">補給</button>
+      <button class="chip" onclick="setDesc('景點門票')">景點門票</button>
+      <button class="chip" onclick="setDesc('駄夫')">駄夫</button>
+      <button class="chip" onclick="setDesc('交通')">交通</button>
+      <button class="chip" onclick="setDesc('住宿')">住宿</button>
+    </div>
+    <input class="modal-input" id="mDesc" type="text" placeholder="或自行輸入…" style="margin-top:6px;">
     <label class="modal-label">金額 (¥)</label>
     <input class="modal-input" id="mAmount" type="number" placeholder="0" min="0">
     <div class="modal-btns">
@@ -1435,10 +1466,15 @@ function updateSummary() {
   remEl.style.color = remain < 0 ? 'var(--red)' : 'var(--green)';
 }
 
+function setDesc(val) {
+  document.getElementById('mDesc').value = val;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.textContent === val));
+}
+
 function openModal() {
   document.getElementById('mDesc').value = '';
   document.getElementById('mAmount').value = '';
-  // Default to today (within trip range)
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('mDate').value = today;
   document.getElementById('modalOverlay').classList.add('open');
