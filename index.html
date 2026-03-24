@@ -1123,6 +1123,8 @@ footer a { color: var(--sky); text-decoration: none; }
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
   <div class="modal">
     <div class="modal-title">新增共同支出</div>
+    <label class="modal-label">日期</label>
+    <input class="modal-input" id="mDate" type="date">
     <label class="modal-label">描述</label>
     <input class="modal-input" id="mDesc" type="text" placeholder="例如：餐飲、駄夫、景點…">
     <label class="modal-label">金額 (¥)</label>
@@ -1436,6 +1438,9 @@ function updateSummary() {
 function openModal() {
   document.getElementById('mDesc').value = '';
   document.getElementById('mAmount').value = '';
+  // Default to today (within trip range)
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('mDate').value = today;
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('mDesc').focus();
 }
@@ -1447,10 +1452,11 @@ function closeModalOut(e) {
 }
 
 function addExpense() {
-  const desc = document.getElementById('mDesc').value.trim();
+  const desc   = document.getElementById('mDesc').value.trim();
   const amount = parseFloat(document.getElementById('mAmount').value);
+  const date   = document.getElementById('mDate').value;
   if (!desc || !amount || amount <= 0) return;
-  expenses.push({ id: Date.now(), desc, amount });
+  expenses.push({ id: Date.now(), desc, amount, date });
   saveData();
   closeModal();
   renderExpenses();
@@ -1464,17 +1470,38 @@ function deleteExpense(id) {
   updateSummary();
 }
 
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return `${d.getMonth()+1}月${d.getDate()}日`;
+}
+
 function renderExpenses() {
   const el = document.getElementById('expList');
   if (expenses.length === 0) {
     el.innerHTML = '<div class="empty-msg">未有支出記錄</div>';
     return;
   }
-  el.innerHTML = expenses.map(e => `
-    <div class="exp-item">
-      <div class="exp-desc">${e.desc}</div>
-      <div class="exp-amount">¥${e.amount.toFixed(0)}</div>
-      <button class="exp-del" onclick="deleteExpense(${e.id})">✕</button>
+  // Sort by date then group
+  const sorted = [...expenses].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const groups = {};
+  sorted.forEach(e => {
+    const key = e.date || '未指定日期';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+
+  el.innerHTML = Object.entries(groups).map(([date, items]) => `
+    <div style="margin-bottom:4px;">
+      <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.12em;color:var(--muted);padding:8px 0 4px;border-bottom:1px solid var(--border);text-transform:uppercase;">
+        ${date === '未指定日期' ? date : formatDate(date)}
+      </div>
+      ${items.map(e => `
+        <div class="exp-item">
+          <div class="exp-desc">${e.desc}</div>
+          <div class="exp-amount">¥${e.amount.toFixed(0)}</div>
+          <button class="exp-del" onclick="deleteExpense(${e.id})">✕</button>
+        </div>`).join('')}
     </div>`).join('');
 }
 
