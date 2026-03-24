@@ -322,6 +322,55 @@ footer {
 
 footer a { color: var(--sky); text-decoration: none; }
 
+/* ── ALTITUDE CHART ── */
+.alt-wrap {
+  position: relative;
+  margin-top: 4px;
+}
+
+.alt-svg {
+  width: 100%;
+  height: 48px;
+  display: block;
+}
+
+.alt-markers {
+  position: relative;
+  height: 32px;
+  margin-top: 2px;
+}
+
+.alt-mark {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.alt-mark:first-child  { transform: translateX(0); }
+.alt-mark:last-child   { transform: translateX(-100%); }
+
+.alt-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+
+.alt-mark.peak .alt-dot { background: var(--purple); width: 7px; height: 7px; }
+
+.alt-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.alt-mark.peak .alt-label { color: var(--purple); font-weight: 600; }
+
 /* ── PROGRESS BAR ── */
 .progress-wrap {
   background: var(--white);
@@ -691,8 +740,63 @@ footer a { color: var(--sky); text-decoration: none; }
     <span id="progressText"></span>
     <span>結束 5/29</span>
   </div>
-  <div class="progress-track">
-    <div class="progress-fill" id="progressFill"></div>
+
+  <!-- Altitude chart + progress bar -->
+  <div class="alt-wrap">
+    <!-- Altitude SVG curve -->
+    <svg class="alt-svg" viewBox="0 0 560 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="altGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#4A7A9B"/>
+          <stop offset="35%"  stop-color="#D4860A"/>
+          <stop offset="55%"  stop-color="#6B4CA0"/>
+          <stop offset="75%"  stop-color="#8B5E3C"/>
+          <stop offset="100%" stop-color="#4A7A9B"/>
+        </linearGradient>
+      </defs>
+      <!-- altitude profile: lhasa(3650)→shigatse(3836)→saga(4640)→tarchen(4600)→kailash peak(5630)→zanda(3800)→saga(4640)→shigatse(3836)→lhasa(3650) -->
+      <!-- normalised 0–48, min=3650→y=42, max=5630→y=4 -->
+      <polyline
+        fill="none"
+        stroke="url(#altGrad)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        points="
+          0,42
+          40,41
+          80,28
+          120,31
+          160,29
+          200,29
+          240,4
+          280,28
+          320,28
+          360,31
+          400,28
+          440,41
+          480,41
+          520,42
+          560,42
+        "
+      />
+    </svg>
+
+    <!-- Altitude markers -->
+    <div class="alt-markers">
+      <div class="alt-mark" style="left:0%">     <div class="alt-dot"></div><div class="alt-label">拉薩<br>3650m</div></div>
+      <div class="alt-mark" style="left:14.3%">  <div class="alt-dot"></div><div class="alt-label">日喀則<br>3836m</div></div>
+      <div class="alt-mark" style="left:28.6%">  <div class="alt-dot"></div><div class="alt-label">薩嘎<br>4640m</div></div>
+      <div class="alt-mark" style="left:35.7%">  <div class="alt-dot"></div><div class="alt-label">塔欽<br>4600m</div></div>
+      <div class="alt-mark peak" style="left:50%"><div class="alt-dot"></div><div class="alt-label">⛰ 卓瑪拉<br>5630m</div></div>
+      <div class="alt-mark" style="left:57.1%">  <div class="alt-dot"></div><div class="alt-label">札達<br>3800m</div></div>
+      <div class="alt-mark" style="left:100%">   <div class="alt-dot" style="margin-left:auto;"></div><div class="alt-label" style="text-align:right;">拉薩<br>3650m</div></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-track" style="margin-top:6px;">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
   </div>
 </div>
 
