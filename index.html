@@ -330,7 +330,7 @@ footer a { color: var(--sky); text-decoration: none; }
 
 .alt-svg {
   width: 100%;
-  height: 48px;
+  height: 60px;
   display: block;
 }
 
@@ -362,7 +362,7 @@ footer a { color: var(--sky); text-decoration: none; }
 .alt-mark.peak .alt-dot { background: var(--purple); width: 7px; height: 7px; }
 
 .alt-label {
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   color: var(--muted);
   line-height: 1.3;
   text-align: center;
@@ -743,54 +743,124 @@ footer a { color: var(--sky); text-decoration: none; }
 
   <!-- Altitude chart + progress bar -->
   <div class="alt-wrap">
-    <!-- Altitude SVG curve -->
-    <svg class="alt-svg" viewBox="0 0 560 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!--
+      Altitude → y: y = 56 - (alt - 3650) * 52 / 1980   (range: 3650m=56, 5630m=4)
+      x per day:    x = (day-1) * 560 / 13               (day1=0, day14=560)
+
+      Key waypoints:
+        D1  x=0   Lhasa      3650m → y=56
+        D2  x=43  Lhasa      3650m → y=56
+        D3a x=65  Yamdrok    4441m → y=35  (mid-day peak, pass through)
+        D3  x=86  Shigatse   3836m → y=51
+        D4  x=129 Saga       4640m → y=30
+        D5  x=172 Tarchen    4600m → y=31
+        D6  x=215 Zhire      4900m → y=23
+        D7a x=244 Zhuomala   5630m → y=4   (mid-day peak)
+        D7  x=258 Zunzhu     5100m → y=18
+        D8  x=301 Zanda      3800m → y=52
+        D9  x=344 Tarchen    4600m → y=31
+        D10 x=387 Saga       4640m → y=30
+        D11 x=430 Shigatse   3836m → y=51
+        D12 x=473 Lhasa      3650m → y=56
+        D13 x=516 Lhasa      3650m → y=56
+        D14 x=560 Lhasa      3650m → y=56
+    -->
+    <svg class="alt-svg" viewBox="0 0 560 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="altGrad" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%"   stop-color="#4A7A9B"/>
-          <stop offset="35%"  stop-color="#D4860A"/>
-          <stop offset="55%"  stop-color="#6B4CA0"/>
-          <stop offset="75%"  stop-color="#8B5E3C"/>
+          <stop offset="22%"  stop-color="#D4860A"/>
+          <stop offset="38%"  stop-color="#D4860A"/>
+          <stop offset="43%"  stop-color="#6B4CA0"/>
+          <stop offset="54%"  stop-color="#8B5E3C"/>
+          <stop offset="70%"  stop-color="#D4860A"/>
           <stop offset="100%" stop-color="#4A7A9B"/>
         </linearGradient>
+        <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#D4860A" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#D4860A" stop-opacity="0.02"/>
+        </linearGradient>
       </defs>
-      <!-- altitude profile: lhasa(3650)→shigatse(3836)→saga(4640)→tarchen(4600)→kailash peak(5630)→zanda(3800)→saga(4640)→shigatse(3836)→lhasa(3650) -->
-      <!-- normalised 0–48, min=3650→y=42, max=5630→y=4 -->
-      <polyline
+
+      <!-- Filled area under curve -->
+      <path
+        d="M 0,56 L 43,56 L 65,35 L 86,51 L 129,30 L 172,31 L 215,23 L 244,4 L 258,18 L 301,52 L 344,31 L 387,30 L 430,51 L 473,56 L 516,56 L 560,56 L 560,60 L 0,60 Z"
+        fill="url(#fillGrad)"
+      />
+
+      <!-- Altitude curve -->
+      <path
+        d="M 0,56 L 43,56 L 65,35 L 86,51 L 129,30 L 172,31 L 215,23 L 244,4 L 258,18 L 301,52 L 344,31 L 387,30 L 430,51 L 473,56 L 516,56 L 560,56"
         fill="none"
         stroke="url(#altGrad)"
-        stroke-width="2.5"
+        stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        points="
-          0,42
-          40,41
-          80,28
-          120,31
-          160,29
-          200,29
-          240,4
-          280,28
-          320,28
-          360,31
-          400,28
-          440,41
-          480,41
-          520,42
-          560,42
-        "
       />
+
+      <!-- Peak dot -->
+      <circle cx="244" cy="4" r="3.5" fill="#6B4CA0"/>
+      <circle cx="244" cy="4" r="6" fill="#6B4CA0" opacity="0.2"/>
+
+      <!-- Day tick marks -->
+      <g stroke="rgba(0,0,0,0.08)" stroke-width="0.5">
+        <line x1="43"  y1="54" x2="43"  y2="58"/>
+        <line x1="86"  y1="54" x2="86"  y2="58"/>
+        <line x1="129" y1="54" x2="129" y2="58"/>
+        <line x1="172" y1="54" x2="172" y2="58"/>
+        <line x1="215" y1="54" x2="215" y2="58"/>
+        <line x1="258" y1="54" x2="258" y2="58"/>
+        <line x1="301" y1="54" x2="301" y2="58"/>
+        <line x1="344" y1="54" x2="344" y2="58"/>
+        <line x1="387" y1="54" x2="387" y2="58"/>
+        <line x1="430" y1="54" x2="430" y2="58"/>
+        <line x1="473" y1="54" x2="473" y2="58"/>
+        <line x1="516" y1="54" x2="516" y2="58"/>
+      </g>
     </svg>
 
     <!-- Altitude markers -->
     <div class="alt-markers">
-      <div class="alt-mark" style="left:0%">     <div class="alt-dot"></div><div class="alt-label">拉薩<br>3650m</div></div>
-      <div class="alt-mark" style="left:14.3%">  <div class="alt-dot"></div><div class="alt-label">日喀則<br>3836m</div></div>
-      <div class="alt-mark" style="left:28.6%">  <div class="alt-dot"></div><div class="alt-label">薩嘎<br>4640m</div></div>
-      <div class="alt-mark" style="left:35.7%">  <div class="alt-dot"></div><div class="alt-label">塔欽<br>4600m</div></div>
-      <div class="alt-mark peak" style="left:50%"><div class="alt-dot"></div><div class="alt-label">⛰ 卓瑪拉<br>5630m</div></div>
-      <div class="alt-mark" style="left:57.1%">  <div class="alt-dot"></div><div class="alt-label">札達<br>3800m</div></div>
-      <div class="alt-mark" style="left:100%">   <div class="alt-dot" style="margin-left:auto;"></div><div class="alt-label" style="text-align:right;">拉薩<br>3650m</div></div>
+      <div class="alt-mark" style="left:0%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">拉薩<br>3650m</div>
+      </div>
+      <div class="alt-mark" style="left:15.4%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">日喀則<br>3836m</div>
+      </div>
+      <div class="alt-mark" style="left:23.1%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">薩嘎<br>4640m</div>
+      </div>
+      <div class="alt-mark" style="left:30.8%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">塔欽<br>4600m</div>
+      </div>
+      <div class="alt-mark peak" style="left:43.6%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">⛰ 卓瑪拉<br>5630m</div>
+      </div>
+      <div class="alt-mark" style="left:53.8%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">札達<br>3800m</div>
+      </div>
+      <div class="alt-mark" style="left:61.4%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">塔欽<br>4600m</div>
+      </div>
+      <div class="alt-mark" style="left:69.1%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">薩嘎<br>4640m</div>
+      </div>
+      <div class="alt-mark" style="left:76.8%">
+        <div class="alt-dot"></div>
+        <div class="alt-label">日喀則<br>3836m</div>
+      </div>
+      <div class="alt-mark" style="left:100%">
+        <div class="alt-dot" style="margin-left:auto;"></div>
+        <div class="alt-label" style="text-align:right;">拉薩<br>3650m</div>
+      </div>
     </div>
 
     <!-- Progress bar -->
