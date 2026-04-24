@@ -654,10 +654,12 @@ footer a { color: var(--sky); text-decoration: none; }
 .modal-input {
   width: 100%; border: 1px solid var(--border);
   border-radius: 7px; padding: 9px 12px;
-  font-size: 0.9rem; font-family: inherit;
+  font-size: 16px; font-family: inherit;
   outline: none; transition: border-color 0.2s;
 }
 .modal-input:focus { border-color: var(--accent); }
+/* Prevent iOS Safari auto-zoom on any input/select/textarea */
+input, select, textarea { font-size: 16px; }
 .modal-btns { display: flex; gap: 8px; margin-top: 20px; }
 .modal-cancel {
   flex: 1; background: var(--bg); color: var(--text);
