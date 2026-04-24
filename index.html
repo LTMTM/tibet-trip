@@ -1450,6 +1450,7 @@ const NAMES = ['人1', '人2', '人3', '人4', '人5'];
 let expenses    = [];
 let poolEntries = [];
 let ignoreUpdate = false;
+let ignorePackUpdate = false;
 let dbRef;
 let packRef;
 
@@ -1530,13 +1531,18 @@ function initFirebase() {
 
   // Listen for pack list changes (structure only, not checked state)
   packRef.on('value', (snapshot) => {
+    if (ignorePackUpdate) return;
     const data = snapshot.val();
     if (!data) {
-      // First time: push defaults to Firebase
       packRef.set(DEFAULT_PACK);
       return;
     }
-    packData = data;
+    // Firebase may return object instead of array — normalize it
+    const normalized = Array.isArray(data) ? data : Object.values(data);
+    packData = normalized.map(sec => ({
+      section: sec.section,
+      items: Array.isArray(sec.items) ? sec.items : Object.values(sec.items || {})
+    }));
     localStorage.setItem('tibet_pack_data', JSON.stringify(packData));
     renderPack();
   });
@@ -1723,10 +1729,13 @@ function savePackChecked() {
 }
 
 function savePackData() {
-  if (packRef) {
-    packRef.set(packData);
-  }
   localStorage.setItem('tibet_pack_data', JSON.stringify(packData));
+  if (packRef) {
+    ignorePackUpdate = true;
+    packRef.set(packData).then(() => {
+      setTimeout(() => { ignorePackUpdate = false; }, 800);
+    }).catch(() => { ignorePackUpdate = false; });
+  }
 }
 
 function renderPack() {
