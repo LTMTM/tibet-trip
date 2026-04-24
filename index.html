@@ -606,6 +606,12 @@ footer a { color: var(--sky); text-decoration: none; }
   transition: color 0.2s;
 }
 .exp-del:hover { color: var(--red); }
+.exp-edit {
+  background: none; border: none; cursor: pointer;
+  font-size: 0.85rem; padding: 0 4px;
+  opacity: 0.4; transition: opacity 0.2s;
+}
+.exp-edit:hover { opacity: 1; }
 
 .empty-msg { font-size: 0.82rem; color: var(--muted); text-align: center; padding: 12px 0; }
 
@@ -1319,7 +1325,7 @@ input, select, textarea { font-size: 16px; }
 <!-- EXPENSE MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOut(event)">
   <div class="modal">
-    <div class="modal-title">新增共同支出</div>
+    <div class="modal-title" id="modalTitle">新增共同支出</div>
     <label class="modal-label">日期</label>
     <input class="modal-input" id="mDate" type="date">
     <label class="modal-label">描述</label>
@@ -1338,7 +1344,7 @@ input, select, textarea { font-size: 16px; }
     <input class="modal-input" id="mAmount" type="number" placeholder="0" min="0">
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">取消</button>
-      <button class="modal-confirm" onclick="addExpense()">確認</button>
+      <button class="modal-confirm" id="modalConfirmBtn" onclick="addExpense()">確認</button>
     </div>
   </div>
 </div>
@@ -1421,8 +1427,17 @@ const today = new Date(); today.setHours(0,0,0,0);
 
 document.querySelectorAll('.day-card').forEach(card => {
   const d = new Date(card.dataset.date); d.setHours(0,0,0,0);
-  if (d.getTime() === today.getTime()) card.classList.add('is-today');
-  else if (d < today) { card.classList.add('is-past'); card.classList.remove('open'); }
+  if (d.getTime() === today.getTime()) {
+    card.classList.add('is-today');
+    card.classList.add('open'); // ensure today is expanded
+    // Auto-scroll to today after a short delay
+    setTimeout(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 600);
+  } else if (d < today) {
+    card.classList.add('is-past');
+    card.classList.remove('open');
+  }
 });
 
 // ── Scroll reveal ──
@@ -1659,8 +1674,40 @@ function openModal() {
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('mDate').value = today;
+  document.getElementById('modalTitle').textContent = '新增共同支出';
+  document.getElementById('modalConfirmBtn').textContent = '確認';
+  document.getElementById('modalConfirmBtn').onclick = addExpense;
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('mDesc').focus();
+}
+
+function editExpense(id) {
+  const e = expenses.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('mDate').value   = e.date || '';
+  document.getElementById('mDesc').value   = e.desc;
+  document.getElementById('mAmount').value = e.amount;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.textContent === e.desc);
+  });
+  document.getElementById('modalTitle').textContent = '編輯支出';
+  document.getElementById('modalConfirmBtn').textContent = '儲存';
+  document.getElementById('modalConfirmBtn').onclick = () => saveExpense(id);
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('mAmount').focus();
+}
+
+function saveExpense(id) {
+  const desc   = document.getElementById('mDesc').value.trim();
+  const amount = parseFloat(document.getElementById('mAmount').value);
+  const date   = document.getElementById('mDate').value;
+  if (!desc || !amount || amount <= 0) return;
+  const exp = expenses.find(e => e.id === id);
+  if (exp) { exp.desc = desc; exp.amount = amount; exp.date = date; }
+  saveData();
+  closeModal();
+  renderExpenses();
+  updateSummary();
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
@@ -1718,6 +1765,7 @@ function renderExpenses() {
         <div class="exp-item">
           <div class="exp-desc">${e.desc}</div>
           <div class="exp-amount">¥${e.amount.toFixed(0)}</div>
+          <button class="exp-edit" onclick="editExpense(${e.id})">✏️</button>
           <button class="exp-del" onclick="deleteExpense(${e.id})">✕</button>
         </div>`).join('')}
     </div>`).join('');
